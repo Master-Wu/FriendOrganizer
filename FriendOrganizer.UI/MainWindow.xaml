@@ -4,9 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FriendOrganizer.UI"
+        xmlns:view="clr-namespace:FriendOrganizer.UI.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" FontSize="20">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <view:NavigationView DataContext="{Binding NavigationViewModel}"/>
+        <view:FriendDetailView Grid.Column="1" DataContext="{Binding FriendDetailViewModel}"/>
+
     </Grid>
 </Window>
