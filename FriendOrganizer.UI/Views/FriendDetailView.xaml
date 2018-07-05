@@ -46,7 +46,13 @@
             <Button Content="Guardar"
                     Width="125"
                     Margin="10"
-                    Command="{Binding SaveCommand}"/>
+                    Command="{Binding SaveCommand}"
+                    />
+            <Button Content="Eliminar"
+                    Width="125"
+                    Margin="10"
+                    Command="{Binding DeleteCommand}"
+                    />
 
         </StackPanel>
     

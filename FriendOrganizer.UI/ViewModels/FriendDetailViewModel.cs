@@ -49,6 +49,8 @@ namespace FriendOrganizer.UI.ViewModels
         // Don't need the setter because the property is initialized directly on the constructor
         public ICommand SaveCommand { get; }
 
+        public ICommand DeleteCommand { get; }
+
         #endregion
 
         #region CONSTRUCTOR
@@ -58,7 +60,9 @@ namespace FriendOrganizer.UI.ViewModels
             _eventAggregator = eventAggregator;
 
             SaveCommand = new DelegateCommand(OnSaveExcute, OnSaveCanExecute);
+            DeleteCommand = new DelegateCommand(OnDeleteExcute);
         }
+
 
         #endregion
 
@@ -85,6 +89,16 @@ namespace FriendOrganizer.UI.ViewModels
         }
 
 
+        private async void OnDeleteExcute()
+        {
+            // Delete friend and save changes
+            _friendRepository.Remove(Friend.Model);
+            await _friendRepository.SaveAsync();
+
+            // Inform navigation via event
+            _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+
+        }
 
         public async Task LoadAsync(int? friendId)
         {
