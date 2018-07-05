@@ -69,12 +69,14 @@
     </ApplicationDefinition>
     <Compile Include="Data\IFriendLookupDataService.cs" />
     <Compile Include="Data\LookupDataService.cs" />
+    <Compile Include="Events\AfterFriendSaveEvent.cs" />
     <Compile Include="Events\OpenFriendDetailViewEvent.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModels\FriendDetailViewModel.cs" />
     <Compile Include="ViewModels\IFriendDetailViewModel.cs" />
     <Compile Include="ViewModels\INavigationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\NavigationItemViewModel.cs" />
     <Compile Include="ViewModels\NavigationViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\FriendDetailView.xaml.cs">
@@ -83,6 +85,9 @@
     <Compile Include="Views\NavigationView.xaml.cs">
       <DependentUpon>NavigationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Wrappers\FriendWrapper.cs" />
+    <Compile Include="Wrappers\ModelWrapper.cs" />
+    <Compile Include="Wrappers\NotifyDataErrorInfoBase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

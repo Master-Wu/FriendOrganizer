@@ -3,20 +3,26 @@ using FriendOrganizer.UI.Data;
 using FriendOrganizer.UI.Events;
 using Prism.Events;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FriendOrganizer.UI.ViewModels
 {
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
+        #region PRIVATE MEMBERS
         private IFriendLookupDataService _friendLookupService;
         private IEventAggregator _eventAggregator;
+        private NavigationItemViewModel _selectedFriend;
 
-        public ObservableCollection<LookupItem> Friends { get; }
+        #endregion
 
-        private LookupItem _selectedFriend;
+        #region PUBLIC PROPERTIES
+        public ObservableCollection<NavigationItemViewModel> Friends { get; }
 
-        public LookupItem SelectedFriend
+
+
+        public NavigationItemViewModel SelectedFriend
         {
             get { return _selectedFriend; }
             set
@@ -33,12 +39,23 @@ namespace FriendOrganizer.UI.ViewModels
             }
         }
 
+        #endregion
 
+        #region CONSTRUCTOR
         public NavigationViewModel(IFriendLookupDataService friendLookupService, IEventAggregator eventAggregator)
         {
             _friendLookupService = friendLookupService;
             _eventAggregator = eventAggregator;
-            Friends = new ObservableCollection<LookupItem>();
+            Friends = new ObservableCollection<NavigationItemViewModel>();
+            _eventAggregator.GetEvent<AfterFriendSaveEvent>().Subscribe(AfterFriendSaved);
+        }
+        #endregion
+
+        #region METHODS
+        private void AfterFriendSaved(AfterFriendSaveEventArgs obj)
+        {
+            var lookupItem = Friends.Single(l => l.Id == obj.Id);
+            lookupItem.DisplayMember = obj.DisplayMember;
         }
 
         public async Task LoadAsync()
@@ -46,8 +63,9 @@ namespace FriendOrganizer.UI.ViewModels
             var lookup = await _friendLookupService.GetFriendLookupAsync();
             foreach (var item in lookup)
             {
-                Friends.Add(item);
+                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember));
             }
         }
+        #endregion
     }
 }

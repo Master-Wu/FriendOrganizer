@@ -16,20 +16,21 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Label Margin="10 10 10 0"
-                   Content="Firstname"/>
+                   Content="Nombre"/>
         <TextBox Grid.Row="1" 
-                     Text="{Binding Friend.FirstName,
+                     Text="{Binding Friend.FirstName, TargetNullValue='',
                             Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Margin="10 0 10 10"/>
 
         <Label Margin="10 0" 
-                   Content="Lastname"
+                   Content="Apellido"
                    Grid.Row="2"/>
         <TextBox Grid.Row="3" 
-                     Text="{Binding Friend.LastName,
+                     Text="{Binding Friend.LastName, TargetNullValue='',
                             Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Margin="10 0 10 10"/>
 
@@ -37,9 +38,17 @@
                    Content="Email"
                    Grid.Row="4"/>
         <TextBox Grid.Row="5" 
-                     Text="{Binding Friend.Email,
+                     Text="{Binding Friend.Email, TargetNullValue='',
                             Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Margin="10 0 10 10"/>
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal">
+            <Button Content="Guardar"
+                    Width="125"
+                    Margin="10"
+                    Command="{Binding SaveCommand}"/>
+
+        </StackPanel>
     
 
     </Grid>

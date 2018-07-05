@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using FriendOrganizer.UI.Startup;
+using System;
 using System.Windows;
 
 namespace FriendOrganizer.UI
@@ -15,6 +16,14 @@ namespace FriendOrganizer.UI
             var container = bootstrapper.Bootstrap();
             var mainWindow = container.Resolve<MainWindow>();
             mainWindow.Show();
+        }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show("Se produjo un error inesperado. Por favor, consulte al desarrollador de la aplicación"
+                + Environment.NewLine + e.Exception.Message, "Error");
+
+            e.Handled = true;
         }
     }
 }
