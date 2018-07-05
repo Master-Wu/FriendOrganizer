@@ -15,6 +15,12 @@ namespace FriendOrganizer.UI.Data.Repositories
             _context = context;
         }
 
+        public void Add(Friend friend)
+        {
+            _context.Friends.Add(friend);
+
+        }
+
         // Is async to maintain the UI responsive while the data is loading
         public async Task<Friend> GetByIdAsync(int friendId)
         {

@@ -1,8 +1,10 @@
 ﻿using FriendOrganizer.UI.Events;
 using FriendOrganizer.UI.Views.Services;
+using Prism.Commands;
 using Prism.Events;
 using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace FriendOrganizer.UI.ViewModels
 {
@@ -27,6 +29,7 @@ namespace FriendOrganizer.UI.ViewModels
 
         public INavigationViewModel NavigationViewModel { get; }
 
+        public ICommand CreateNewFriendCommand { get; }
 
 
         public MainViewModel(INavigationViewModel navigationViewModel, Func<IFriendDetailViewModel> friendDetailViewModelCreator,
@@ -37,8 +40,13 @@ namespace FriendOrganizer.UI.ViewModels
             _eventAggregator = eventAggregator;
             _eventAggregator.GetEvent<OpenFriendDetailViewEvent>()
                 .Subscribe(OnOpenFriendDetailView);
-
+            CreateNewFriendCommand = new DelegateCommand(OnCreateNewFriendExcute);
             NavigationViewModel = navigationViewModel;
+        }
+
+        private void OnCreateNewFriendExcute()
+        {
+            OnOpenFriendDetailView(null);
         }
 
         public async Task LoadAsync()
@@ -46,7 +54,7 @@ namespace FriendOrganizer.UI.ViewModels
             await NavigationViewModel.LoadAsync();
         }
 
-        private async void OnOpenFriendDetailView(int friendId)
+        private async void OnOpenFriendDetailView(int? friendId)
         {
             // Block navigation if the user has made changes to a friend
             if (null != FriendDetailViewModel && FriendDetailViewModel.HasChanges)

@@ -1,4 +1,5 @@
-﻿using FriendOrganizer.UI.Data.Repositories;
+﻿using FriendOrganizer.Model;
+using FriendOrganizer.UI.Data.Repositories;
 using FriendOrganizer.UI.Events;
 using FriendOrganizer.UI.Wrappers;
 using Prism.Commands;
@@ -85,9 +86,9 @@ namespace FriendOrganizer.UI.ViewModels
 
 
 
-        public async Task LoadAsync(int friendId)
+        public async Task LoadAsync(int? friendId)
         {
-            var friend = await _friendRepository.GetByIdAsync(friendId);
+            var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();
 
             Friend = new FriendWrapper(friend);
 
@@ -101,6 +102,17 @@ namespace FriendOrganizer.UI.ViewModels
               };
 
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+
+            // Trick to trigger the validation
+            if (Friend.Id == 0)
+                Friend.FirstName = "";
+        }
+
+        private Friend CreateNewFriend()
+        {
+            var friend = new Friend();
+            _friendRepository.Add(friend);
+            return friend;
         }
         #endregion
     }
