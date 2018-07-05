@@ -1,7 +1,9 @@
 ﻿using Autofac;
 using FriendOrganizer.Data;
-using FriendOrganizer.UI.Data;
+using FriendOrganizer.UI.Data.Lookups;
+using FriendOrganizer.UI.Data.Repositories;
 using FriendOrganizer.UI.ViewModels;
+using FriendOrganizer.UI.Views.Services;
 using Prism.Events;
 
 namespace FriendOrganizer.UI.Startup
@@ -13,11 +15,12 @@ namespace FriendOrganizer.UI.Startup
             var builder = new ContainerBuilder();
 
             // When an interface is required, it creates an object that implements it.
-            builder.RegisterType<FriendDataService>().As<IFriendDataService>();
+            builder.RegisterType<FriendRepository>().As<IFriendRepository>();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
             builder.RegisterType<FriendDetailViewModel>().As<IFriendDetailViewModel>();
+            builder.RegisterType<MessageDialogService>().As<IMessageDialogService>();
 
-            // Register a single instance of the Prism EventAggregator to enable communication between viewmodels
+            // Register a single instance of the Prism EventAggregator to enable communication between ViewModels
             builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
 
             // Register a type that implements multiple interfaces
@@ -27,6 +30,7 @@ namespace FriendOrganizer.UI.Startup
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<MainWindow>().AsSelf();
             builder.RegisterType<FriendOrganizerDbContext>().AsSelf();
+
 
             return builder.Build();
         }
