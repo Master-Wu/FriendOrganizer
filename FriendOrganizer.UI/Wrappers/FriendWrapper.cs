@@ -26,6 +26,13 @@ namespace FriendOrganizer.UI.Wrappers
             set => SetValue(value);
         }
 
+        public int? FavoriteLanguageId
+        {
+            get => GetValue<int?>();
+            set => SetValue(value);
+        }
+
+
         public string Email
         {
             get => GetValue<string>();

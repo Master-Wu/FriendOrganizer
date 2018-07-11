@@ -7,6 +7,7 @@ namespace FriendOrganizer.Data
     {
         #region DBSETS
         public DbSet<Friend> Friends { get; set; }
+        public DbSet<ProgrammingLanguage> ProgrammingLanguages { get; set; }
         #endregion
 
 
