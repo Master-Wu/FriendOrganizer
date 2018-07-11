@@ -5,8 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FriendOrganizer.UI"
         xmlns:view="clr-namespace:FriendOrganizer.UI.Views"
+        xmlns:vm="clr-namespace:FriendOrganizer.UI.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" FontSize="16">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:FriendDetailViewModel}">
+            <view:FriendDetailView/>
+        </DataTemplate>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,9 +35,9 @@
         <view:NavigationView Grid.Row="1"
                              DataContext="{Binding NavigationViewModel}"
                              />
-        <view:FriendDetailView Grid.Column="1"
+        <ContentControl Grid.Column="1"
                                Grid.Row="1"
-                               DataContext="{Binding FriendDetailViewModel}"
+                               Content="{Binding FriendDetailViewModel}"
                                />
 
     </Grid>

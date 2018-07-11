@@ -1,6 +1,7 @@
 ﻿using FriendOrganizer.Model;
 using FriendOrganizer.UI.Data.Repositories;
 using FriendOrganizer.UI.Events;
+using FriendOrganizer.UI.Views.Services;
 using FriendOrganizer.UI.Wrappers;
 using Prism.Commands;
 using Prism.Events;
@@ -9,11 +10,14 @@ using System.Windows.Input;
 
 namespace FriendOrganizer.UI.ViewModels
 {
-    public class FriendDetailViewModel : ViewModelBase, IFriendDetailViewModel
+    public class
+
+        FriendDetailViewModel : ViewModelBase, IFriendDetailViewModel
     {
         #region PRIVATE MEMBERS
         private IFriendRepository _friendRepository;
         private IEventAggregator _eventAggregator;
+        private IMessageDialogService _messageDialogService;
         private FriendWrapper _friend;
         private bool _hasChanges;
         #endregion
@@ -54,10 +58,11 @@ namespace FriendOrganizer.UI.ViewModels
         #endregion
 
         #region CONSTRUCTOR
-        public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator)
+        public FriendDetailViewModel(IFriendRepository friendRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
         {
             _friendRepository = friendRepository;
             _eventAggregator = eventAggregator;
+            _messageDialogService = messageDialogService;
 
             SaveCommand = new DelegateCommand(OnSaveExcute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExcute);
@@ -91,12 +96,18 @@ namespace FriendOrganizer.UI.ViewModels
 
         private async void OnDeleteExcute()
         {
-            // Delete friend and save changes
-            _friendRepository.Remove(Friend.Model);
-            await _friendRepository.SaveAsync();
+            var result = _messageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}", "Pregunta");
 
-            // Inform navigation via event
-            _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+            if (result == MessageDialogResult.OK)
+            {
+
+                // Delete friend and save changes
+                _friendRepository.Remove(Friend.Model);
+                await _friendRepository.SaveAsync();
+
+                // Inform navigation via event
+                _eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+            }
 
         }
 
