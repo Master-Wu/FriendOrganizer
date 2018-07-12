@@ -16,6 +16,7 @@ namespace FriendOrganizer.UI.Startup
 
             // When an interface is required, it creates an object that implements it.
             builder.RegisterType<FriendRepository>().As<IFriendRepository>();
+            builder.RegisterType<MeetingRepository>().As<IMeetingRepository>();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
             builder.RegisterType<FriendDetailViewModel>().As<IFriendDetailViewModel>();
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>();
