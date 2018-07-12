@@ -5,44 +5,23 @@ using System.Threading.Tasks;
 
 namespace FriendOrganizer.UI.Data.Repositories
 {
-    public class FriendRepository : IFriendRepository
+    public class FriendRepository : GenericRepository<Friend, FriendOrganizerDbContext>, IFriendRepository
     {
-        private FriendOrganizerDbContext _context;
-
-
-        public FriendRepository(FriendOrganizerDbContext context)
+        public FriendRepository(FriendOrganizerDbContext context) : base(context)
         {
-            _context = context;
         }
-
-        public void Add(Friend friend)
-        {
-            _context.Friends.Add(friend);
-
-        }
-
         // Is async to maintain the UI responsive while the data is loading
-        public async Task<Friend> GetByIdAsync(int friendId)
+        public override async Task<Friend> GetByIdAsync(int friendId)
         {
-            return await _context.Friends.SingleAsync(f => f.Id == friendId);
+            return await Context.Friends
+                .Include(f => f.PhoneNumbers)
+                .SingleAsync(f => f.Id == friendId);
         }
 
-        // Look for changes on the model
-        public bool HasChanges()
-        {
-            return _context.ChangeTracker.HasChanges();
-        }
 
-        public void Remove(Friend model)
+        public void RemovePhoneNumber(FriendPhoneNumber model)
         {
-            _context.Friends.Remove(model);
-        }
-
-        // Save the model
-        public async Task SaveAsync()
-        {
-            await _context.SaveChangesAsync();
-
+            Context.FriendPhoneNumbers.Remove(model);
         }
 
 

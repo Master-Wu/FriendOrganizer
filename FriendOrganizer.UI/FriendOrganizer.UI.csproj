@@ -71,12 +71,16 @@
     <Compile Include="Data\Lookups\IProgrammingLanguageLookupDataService.cs" />
     <Compile Include="Data\Lookups\LookupDataService.cs" />
     <Compile Include="Data\Repositories\FriendRepository.cs" />
+    <Compile Include="Data\Repositories\GenericRepositry.cs" />
     <Compile Include="Data\Repositories\IFriendRepository.cs" />
-    <Compile Include="Events\AfterFriendDeletedEvent.cs" />
-    <Compile Include="Events\AfterFriendSaveEvent.cs" />
-    <Compile Include="Events\OpenFriendDetailViewEvent.cs" />
+    <Compile Include="Data\Repositories\IGenericRepository.cs" />
+    <Compile Include="Events\AfterDetailDeletedEvent.cs" />
+    <Compile Include="Events\AfterDetailSavedEvent.cs" />
+    <Compile Include="Events\OpenDetailViewEvent.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
+    <Compile Include="ViewModels\DetailViewModelBase.cs" />
     <Compile Include="ViewModels\FriendDetailViewModel.cs" />
+    <Compile Include="ViewModels\IDetailViewModel.cs" />
     <Compile Include="ViewModels\IFriendDetailViewModel.cs" />
     <Compile Include="ViewModels\INavigationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -91,6 +95,7 @@
     </Compile>
     <Compile Include="Views\Services\IMessageDialogService.cs" />
     <Compile Include="Views\Services\MessageDialogService.cs" />
+    <Compile Include="Wrappers\FriendPhoneNumberWrapper.cs" />
     <Compile Include="Wrappers\FriendWrapper.cs" />
     <Compile Include="Wrappers\ModelWrapper.cs" />
     <Compile Include="Wrappers\NotifyDataErrorInfoBase.cs" />
