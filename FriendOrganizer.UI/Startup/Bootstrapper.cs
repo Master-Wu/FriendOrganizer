@@ -18,8 +18,11 @@ namespace FriendOrganizer.UI.Startup
             builder.RegisterType<FriendRepository>().As<IFriendRepository>();
             builder.RegisterType<MeetingRepository>().As<IMeetingRepository>();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
-            builder.RegisterType<FriendDetailViewModel>().As<IFriendDetailViewModel>();
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>();
+
+            // Keyed indexes for more simple access on main view model
+            builder.RegisterType<FriendDetailViewModel>().Keyed<IDetailViewModel>(nameof(FriendDetailViewModel));
+            builder.RegisterType<MeetingDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeetingDetailViewModel));
 
             // Register a single instance of the Prism EventAggregator to enable communication between ViewModels
             builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();

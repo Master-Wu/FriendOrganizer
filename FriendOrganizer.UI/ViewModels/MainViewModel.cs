@@ -1,4 +1,5 @@
-﻿using FriendOrganizer.UI.Events;
+﻿using Autofac.Features.Indexed;
+using FriendOrganizer.UI.Events;
 using FriendOrganizer.UI.Views.Services;
 using Prism.Commands;
 using Prism.Events;
@@ -11,8 +12,7 @@ namespace FriendOrganizer.UI.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private IMessageDialogService _messageDialogService;
-        private Func<IFriendDetailViewModel> _friendDetailViewModelCreator;
-
+        private IIndex<string, IDetailViewModel> _detailViewModelCreator;
         private IEventAggregator _eventAggregator;
 
         private IDetailViewModel _detailViewModel;
@@ -32,11 +32,11 @@ namespace FriendOrganizer.UI.ViewModels
         public ICommand CreateNewDetailCommand { get; }
 
 
-        public MainViewModel(INavigationViewModel navigationViewModel, Func<IFriendDetailViewModel> friendDetailViewModelCreator,
-            IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
+        public MainViewModel(INavigationViewModel navigationViewModel, IIndex<string, IDetailViewModel> detailViewModelCreator, IEventAggregator eventAggregator,
+            IMessageDialogService messageDialogService)
         {
             _messageDialogService = messageDialogService;
-            _friendDetailViewModelCreator = friendDetailViewModelCreator;
+            _detailViewModelCreator = detailViewModelCreator;
             _eventAggregator = eventAggregator;
             _eventAggregator.GetEvent<OpenDetailViewEvent>()
                 .Subscribe(OnOpenDetailView);
@@ -71,17 +71,7 @@ namespace FriendOrganizer.UI.ViewModels
                 if (result == MessageDialogResult.Cancel) return;
             }
 
-            // Switch view to show depending on ViewModelName
-            switch (args.ViewModelName)
-            {
-                case nameof(FriendDetailViewModel):
-                    DetailViewModel = _friendDetailViewModelCreator();
-                    break;
-            }
-
-
-
-
+            DetailViewModel = _detailViewModelCreator[args.ViewModelName];
             await DetailViewModel.LoadAsync(args.Id);
         }
 

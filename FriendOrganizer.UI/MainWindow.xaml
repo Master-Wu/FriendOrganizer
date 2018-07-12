@@ -32,8 +32,10 @@
 
         <Menu Grid.ColumnSpan="2" FontSize="16">
             <MenuItem Header="Crear">
-            <MenuItem Header="Nuevo Amigo" Command="{Binding CreateNewDetailCommand}"
+            <MenuItem Header="Nuevo contacto" Command="{Binding CreateNewDetailCommand}"
                       CommandParameter="{x:Type vm:FriendDetailViewModel}"/>
+                <MenuItem Header="Nueva reunión" Command="{Binding CreateNewDetailCommand}"
+                      CommandParameter="{x:Type vm:MeetingDetailViewModel}"/>
             </MenuItem>
 
         </Menu>

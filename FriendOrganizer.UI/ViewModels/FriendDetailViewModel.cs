@@ -224,7 +224,13 @@ namespace FriendOrganizer.UI.ViewModels
 
         protected override async void OnDeleteExecute()
         {
-            var result = _messageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}", "Pregunta");
+            if (await _friendRepository.HasMeetingsAsync(Friend.Id))
+            {
+                _messageDialogService.ShowInfoDialog($"El contacto {Friend.FirstName} {Friend.LastName} no puede ser eliminado porque tiene reuniones.");
+                return;
+            }
+
+            var result = _messageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}?", "Pregunta");
 
             if (result == MessageDialogResult.OK)
             {
