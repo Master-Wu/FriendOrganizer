@@ -14,7 +14,6 @@
         <DataTemplate DataType="{x:Type vm:FriendDetailViewModel}">
             <view:FriendDetailView/>
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:MeetingDetailViewModel}">
             <view:MeetingDetailView/>
         </DataTemplate>
@@ -43,10 +42,22 @@
         <view:NavigationView Grid.Row="1"
                              DataContext="{Binding NavigationViewModel}"
                              />
-        <ContentControl Grid.Column="1"
-                               Grid.Row="1"
-                               Content="{Binding DetailViewModel}"
-                               />
+        <TabControl Grid.Column="1"
+                    Grid.Row="1"
+                    ItemsSource="{Binding DetailViewModels}"
+                    SelectedItem="{Binding SelectedDetailViewModel, Mode=TwoWay}"
+                    >
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Title"/>
+                        <TextBlock Text="*"
+                                   Visibility="{Binding HasChanges}"
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            
+        </TabControl>
 
     </Grid>
 </Window>

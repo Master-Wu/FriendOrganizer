@@ -11,11 +11,21 @@ namespace FriendOrganizer.UI.ViewModels
         #region PROPERTIES AND FIELDS
 
         private bool _hasChanges;
+        private int _id;
 
         protected readonly IEventAggregator EventAggregator;
 
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
+
+
+
+        public int Id
+        {
+            get { return _id; }
+            protected set { _id = value; }
+        }
+
 
         public bool HasChanges
         {

@@ -117,6 +117,8 @@ namespace FriendOrganizer.UI.ViewModels
                 await _meetingRepository.GetByIdAsync(meetingId.Value) :
                 CreateNewMeeting();
 
+            Id = meeting.Id;
+
             InitializeMeeting(meeting);
 
             // Load friends for the meeting
@@ -220,6 +222,7 @@ namespace FriendOrganizer.UI.ViewModels
         {
             await _meetingRepository.SaveAsync();
             HasChanges = _meetingRepository.HasChanges();
+            Id = Meeting.Id;
             RaiseDetailSavedEvent(Meeting.Id, Meeting.Title);
         }
     }
