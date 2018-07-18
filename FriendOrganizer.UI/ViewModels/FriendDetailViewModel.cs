@@ -20,11 +20,11 @@ namespace FriendOrganizer.UI.ViewModels
     {
         #region PRIVATE MEMBERS
         private IFriendRepository _friendRepository;
-
-        private IMessageDialogService _messageDialogService;
+                
         private IProgrammingLanguageLookupDataService _programmingLanguageLookupDataService;
         private FriendWrapper _friend;
         private FriendPhoneNumberWrapper _selectedPhoneNumber;
+
         #endregion
 
         #region PUBLIC PROPERTIES
@@ -67,10 +67,10 @@ namespace FriendOrganizer.UI.ViewModels
         public FriendDetailViewModel(IFriendRepository friendRepository,
             IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService,
-            IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator)
+            IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator, messageDialogService)
         {
             _friendRepository = friendRepository;
-            _messageDialogService = messageDialogService;
+            
             _programmingLanguageLookupDataService = programmingLanguageLookupDataService;
 
             AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
@@ -128,11 +128,11 @@ namespace FriendOrganizer.UI.ViewModels
 
         #region METHODS
 
-        public override async Task LoadAsync(int? friendId)
+        public override async Task LoadAsync(int friendId)
         {
-            var friend = friendId.HasValue ? await _friendRepository.GetByIdAsync(friendId.Value) : CreateNewFriend();
+            var friend = friendId > 0 ? await _friendRepository.GetByIdAsync(friendId) : CreateNewFriend();
 
-            Id = friend.Id;
+            Id = friendId;
 
             InitializeFriend(friend);
 
@@ -186,13 +186,25 @@ namespace FriendOrganizer.UI.ViewModels
 
                 if (e.PropertyName == nameof(Friend.HasErrors))
                     ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+
+                if (e.PropertyName == nameof(Friend.FirstName) || e.PropertyName == nameof(Friend.LastName))
+                    SetTitle();
             };
+
+
 
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
 
             // Trick to trigger the validation
             if (Friend.Id == 0)
                 Friend.FirstName = "";
+
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            Title = $"{Friend.FirstName} {Friend.LastName}";
         }
 
         private async Task LoadPropgrammingLanguagesLookupAsyn()
@@ -214,7 +226,6 @@ namespace FriendOrganizer.UI.ViewModels
             return friend;
         }
 
-
         protected async override void OnSaveExceute()
         {
             await _friendRepository.SaveAsync();
@@ -230,11 +241,11 @@ namespace FriendOrganizer.UI.ViewModels
         {
             if (await _friendRepository.HasMeetingsAsync(Friend.Id))
             {
-                _messageDialogService.ShowInfoDialog($"El contacto {Friend.FirstName} {Friend.LastName} no puede ser eliminado porque tiene reuniones.");
+                MessageDialogService.ShowInfoDialog($"El contacto {Friend.FirstName} {Friend.LastName} no puede ser eliminado porque tiene reuniones.");
                 return;
             }
 
-            var result = _messageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}?", "Pregunta");
+            var result = MessageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}?", "Pregunta");
 
             if (result == MessageDialogResult.OK)
             {
@@ -247,8 +258,6 @@ namespace FriendOrganizer.UI.ViewModels
 
             }
         }
-
-
 
         protected override bool OnSaveCanExcute()
         {

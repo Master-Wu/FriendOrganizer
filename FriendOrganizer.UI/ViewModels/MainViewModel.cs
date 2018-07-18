@@ -16,7 +16,7 @@ namespace FriendOrganizer.UI.ViewModels
         private IMessageDialogService _messageDialogService;
         private IIndex<string, IDetailViewModel> _detailViewModelCreator;
         private IEventAggregator _eventAggregator;
-
+        private int _nextNewItemId = 0;
         private IDetailViewModel _selectedDetailViewModel;
 
         public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
@@ -42,30 +42,46 @@ namespace FriendOrganizer.UI.ViewModels
         {
             _messageDialogService = messageDialogService;
             _detailViewModelCreator = detailViewModelCreator;
+
             _eventAggregator = eventAggregator;
             _eventAggregator.GetEvent<OpenDetailViewEvent>()
                 .Subscribe(OnOpenDetailView);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>()
                 .Subscribe(AfterDetailDeleted);
+            _eventAggregator.GetEvent<AfterDetailClosedEvent>()
+                .Subscribe(AfterDetailClosed);
+
+
             CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExcute);
 
             NavigationViewModel = navigationViewModel;
             DetailViewModels = new ObservableCollection<IDetailViewModel>();
         }
+
+
         #endregion
 
+        /// <summary>
+        /// Remove DetailViewModel from collection and close tab when it's deleted
+        /// </summary>
+        /// <param name="args"></param>
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
 
-            var detailViewModel = DetailViewModels.SingleOrDefault(vm => vm.Id == args.Id && vm.GetType().Name == args.ViewModelName);
-
-            if (null != detailViewModel)
-                DetailViewModels.Remove(detailViewModel);
+        /// <summary>
+        /// Remove DetailViewModel from collection and close tab
+        /// </summary>
+        /// <param name="args"></param>
+        private void AfterDetailClosed(AfterDetailClosedEventArgs args)
+        {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
         }
 
         private void OnCreateNewDetailExcute(Type viewModelType)
         {
-            OnOpenDetailView(new OpenDetailViewEventArgs { ViewModelName = viewModelType.Name });
+            OnOpenDetailView(new OpenDetailViewEventArgs { Id = _nextNewItemId--, ViewModelName = viewModelType.Name });
         }
 
         public async Task LoadAsync()
@@ -81,7 +97,7 @@ namespace FriendOrganizer.UI.ViewModels
             if (null == detailViewModel)
             {
                 detailViewModel = _detailViewModelCreator[args.ViewModelName];
-                await SelectedDetailViewModel.LoadAsync(args.Id);
+                await detailViewModel.LoadAsync(args.Id);
                 // Add to collection of detail views
                 DetailViewModels.Add(detailViewModel);
             }
@@ -90,7 +106,19 @@ namespace FriendOrganizer.UI.ViewModels
             SelectedDetailViewModel = detailViewModel;
         }
 
+        /// <summary>
+        /// Remove a DetailViewModel object from the DetailViewModelsCollection
+        /// </summary>
+        /// <param name="id">The Id of the DetailViewModel remove</param>
+        /// <param name="viewModelName">The Name of the DetailViewModel remove</param>
+        private void RemoveDetailViewModel(int? id, string viewModelName)
+        {
 
+            var detailViewModel = DetailViewModels.SingleOrDefault(vm => vm.Id == id && vm.GetType().Name == viewModelName);
+
+            if (null != detailViewModel)
+                DetailViewModels.Remove(detailViewModel);
+        }
 
     }
 }
