@@ -242,7 +242,7 @@ namespace FriendOrganizer.UI.ViewModels
 
         protected override async void OnDeleteExecute()
         {
-            var result = MessageDialogService.ShowOkCancelDialog($"¿Realmente quiere eliminar la reunión?", "Pregunta");
+            var result = await MessageDialogService.ShowOkCancelDialogAsync($"¿Realmente quiere eliminar la reunión?", "Pregunta");
 
             if (result == MessageDialogResult.OK)
             {

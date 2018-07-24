@@ -27,6 +27,9 @@ namespace FriendOrganizer.Model
 
         public ICollection<Meeting> Meetings { get; set; }
 
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         public Friend()
         {
             PhoneNumbers = new Collection<FriendPhoneNumber>();

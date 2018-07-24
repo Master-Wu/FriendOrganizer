@@ -26,21 +26,21 @@
                      Text="{Binding Meeting.Title, 
                             Mode=TwoWay,
                             UpdateSourceTrigger=PropertyChanged}"
-                     Margin="10 0 10 10"/>
+                     Margin="10 0 "/>
 
         <Label Margin="10 0"
                Grid.Row="2"
-               Content="Inicio"/>
+               Content="Inicio Reunión"/>
         <toolkit:DateTimePicker Grid.Row="3"
                                 Value="{Binding Meeting.DateFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                />
+                                Margin="10 0"/>
         
         <Label Margin="10 0"
                Grid.Row="4"
-               Content="Fin"/>
+               Content="Fin Reunión"/>
         <toolkit:DateTimePicker Grid.Row="5"
                                 Value="{Binding Meeting.DateTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                />
+                                Margin="10 0"/>
 
         <Grid Grid.Row="6"
               Margin="10">

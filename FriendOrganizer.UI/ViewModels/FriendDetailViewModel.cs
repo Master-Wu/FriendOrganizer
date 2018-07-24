@@ -1,6 +1,7 @@
 ﻿using FriendOrganizer.Model;
 using FriendOrganizer.UI.Data.Lookups;
 using FriendOrganizer.UI.Data.Repositories;
+using FriendOrganizer.UI.Events;
 using FriendOrganizer.UI.Views.Services;
 using FriendOrganizer.UI.Wrappers;
 using Prism.Commands;
@@ -20,7 +21,7 @@ namespace FriendOrganizer.UI.ViewModels
     {
         #region PRIVATE MEMBERS
         private IFriendRepository _friendRepository;
-                
+
         private IProgrammingLanguageLookupDataService _programmingLanguageLookupDataService;
         private FriendWrapper _friend;
         private FriendPhoneNumberWrapper _selectedPhoneNumber;
@@ -70,8 +71,9 @@ namespace FriendOrganizer.UI.ViewModels
             IProgrammingLanguageLookupDataService programmingLanguageLookupDataService) : base(eventAggregator, messageDialogService)
         {
             _friendRepository = friendRepository;
-            
+
             _programmingLanguageLookupDataService = programmingLanguageLookupDataService;
+            eventAggregator.GetEvent<AfterCollectionSavedEvent>().Subscribe(AfterCollectionSaved);
 
             AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
             RemovePhoneNumberCommand = new DelegateCommand(OnRemovePhoneNumberExecute, OnRemovePhoneNumberCanExceute);
@@ -79,6 +81,19 @@ namespace FriendOrganizer.UI.ViewModels
             ProgrammingLanguages = new ObservableCollection<LookupItem>();
             PhoneNumbers = new ObservableCollection<FriendPhoneNumberWrapper>();
         }
+
+
+
+        #endregion
+
+        #region METHODS
+
+        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
+        {
+            if (args.ViewModelName == nameof(ProgrammingLanguageDetailViewModel))
+                await LoadProgrammingLanguagesLookupAsync();
+        }
+
 
         private void OnRemovePhoneNumberExecute()
         {
@@ -124,10 +139,6 @@ namespace FriendOrganizer.UI.ViewModels
         }
 
 
-        #endregion
-
-        #region METHODS
-
         public override async Task LoadAsync(int friendId)
         {
             var friend = friendId > 0 ? await _friendRepository.GetByIdAsync(friendId) : CreateNewFriend();
@@ -138,7 +149,7 @@ namespace FriendOrganizer.UI.ViewModels
 
             InitializeFriendPhoneNumbers(friend.PhoneNumbers);
 
-            await LoadPropgrammingLanguagesLookupAsyn();
+            await LoadProgrammingLanguagesLookupAsync();
         }
 
         private void InitializeFriendPhoneNumbers(ICollection<FriendPhoneNumber> phoneNumbers)
@@ -207,14 +218,19 @@ namespace FriendOrganizer.UI.ViewModels
             Title = $"{Friend.FirstName} {Friend.LastName}";
         }
 
-        private async Task LoadPropgrammingLanguagesLookupAsyn()
+        private async Task LoadProgrammingLanguagesLookupAsync()
         {
+            // Clear collection
             ProgrammingLanguages.Clear();
+
             // Add the null lookup item before getting data from database
             ProgrammingLanguages.Add(new NullLookupItem());
+
+            // Look for programming languages
             var lookup = await _programmingLanguageLookupDataService.GetProgrammingLanguageLookupAsync();
             foreach (var item in lookup)
             {
+                // Add programming langugaes to the collection
                 ProgrammingLanguages.Add(item);
             }
         }
@@ -228,24 +244,27 @@ namespace FriendOrganizer.UI.ViewModels
 
         protected async override void OnSaveExceute()
         {
-            await _friendRepository.SaveAsync();
+            await SaveWithOptimisticConcurrencyAsync(_friendRepository.SaveAsync, () =>
+                 {
 
-            HasChanges = _friendRepository.HasChanges();
+                     HasChanges = _friendRepository.HasChanges();
 
-            Id = Friend.Id;
+                     Id = Friend.Id;
 
-            RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+                     RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+
+                 });
         }
 
         protected override async void OnDeleteExecute()
         {
             if (await _friendRepository.HasMeetingsAsync(Friend.Id))
             {
-                MessageDialogService.ShowInfoDialog($"El contacto {Friend.FirstName} {Friend.LastName} no puede ser eliminado porque tiene reuniones.");
+                await MessageDialogService.ShowInfoDialogAsync($"El contacto {Friend.FirstName} {Friend.LastName} no puede ser eliminado porque tiene reuniones.");
                 return;
             }
 
-            var result = MessageDialogService.ShowOkCancelDialog($"¿Eliminar a {Friend.FirstName} {Friend.LastName}?", "Pregunta");
+            var result = await MessageDialogService.ShowOkCancelDialogAsync($"¿Eliminar a {Friend.FirstName} {Friend.LastName}?", "Pregunta");
 
             if (result == MessageDialogResult.OK)
             {

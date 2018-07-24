@@ -45,7 +45,7 @@
                      Margin="10 0 10 10"/>
 
         <Label Margin="10 0"
-                   Content="Favorite Language"
+                   Content="Lenguaje favorito"
                    Grid.Row="6"/>
         <ComboBox Grid.Row="7"
                   Margin="10 0 10 10"

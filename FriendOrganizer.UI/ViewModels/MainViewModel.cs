@@ -34,6 +34,7 @@ namespace FriendOrganizer.UI.ViewModels
         public INavigationViewModel NavigationViewModel { get; }
 
         public ICommand CreateNewDetailCommand { get; }
+        public ICommand OpenSingleDetailViewCommand { get; }
 
         #region CONSTRUCTOR
 
@@ -53,12 +54,11 @@ namespace FriendOrganizer.UI.ViewModels
 
 
             CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExcute);
+            OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
 
             NavigationViewModel = navigationViewModel;
             DetailViewModels = new ObservableCollection<IDetailViewModel>();
         }
-
-
         #endregion
 
         /// <summary>
@@ -84,6 +84,11 @@ namespace FriendOrganizer.UI.ViewModels
             OnOpenDetailView(new OpenDetailViewEventArgs { Id = _nextNewItemId--, ViewModelName = viewModelType.Name });
         }
 
+        private void OnOpenSingleDetailViewExecute(Type viewModelType)
+        {
+            OnOpenDetailView(new OpenDetailViewEventArgs { Id = -1, ViewModelName = viewModelType.Name });
+        }
+
         public async Task LoadAsync()
         {
             await NavigationViewModel.LoadAsync();
@@ -97,7 +102,17 @@ namespace FriendOrganizer.UI.ViewModels
             if (null == detailViewModel)
             {
                 detailViewModel = _detailViewModelCreator[args.ViewModelName];
-                await detailViewModel.LoadAsync(args.Id);
+                try
+                {
+                    await detailViewModel.LoadAsync(args.Id);
+                }
+                catch (Exception)
+                {
+                    await _messageDialogService.ShowInfoDialogAsync("Nos se pudo cargar la entidad. Tal vez fue borrada por otro usuario. Presione Ok para refrescar la ventana");
+                    await NavigationViewModel.LoadAsync();
+                    return;
+                }
+
                 // Add to collection of detail views
                 DetailViewModels.Add(detailViewModel);
             }
